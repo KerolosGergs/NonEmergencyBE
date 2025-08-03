@@ -13,6 +13,6 @@ namespace Shared.DTOS.RequestDTOS
         public DateTime ScheduledDate { get; set; }
         public string EmergencyType { get; set; }
         public string Notes { get; set; }
-        //public int AssignedAmbulanceId { get; set; }
+        public int AssignedAmbulanceId { get; set; }
     }
 }
