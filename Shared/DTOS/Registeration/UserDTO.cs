@@ -8,10 +8,12 @@ namespace Shared.DTOS.Registeration
 {
     public class UserDTO
     {
+        public string UserId { get; set; }
+        public int? ProfileId { get; set; }
         public string FullName { get; set; } = default!;
         public string Email { get; set; } = default!;
         public string Token { get; set; } = default!;
-        public string DisplayName { get; set; } = default!; 
+        public string DisplayName { get; set; } = default!;
         public string Role { get; set; } = default!;
     }
 }

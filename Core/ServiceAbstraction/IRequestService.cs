@@ -10,7 +10,7 @@ namespace ServiceAbstraction
 {
     public interface IRequestService
     {
-        public Task<RequestDTO> AddNewRequest(string userId, CreateRequestDTO createRequestDTO); 
+        public Task<RequestDTO> AddNewRequest(string userId, CreateRequestDTO createRequestDTO);
         public Task<IEnumerable<RequestDTO>> GetAllRequestsWithRelatedData();
         Task<IEnumerable<RequestDTO>> GetAvailableRequestsForDriverAsync();
         Task<IEnumerable<RequestDTO>> GetAvailableRequestsForNurseAsync();
@@ -21,5 +21,6 @@ namespace ServiceAbstraction
         public Task<RequestDTO?> GetRequestById(RequestDTO requestDTO);
         Task<TripDTO?> ConfirmPatientAsync(int requestId);
         Task<bool> CancelRequestAsync(int requestId);
+        Task<IEnumerable<RequestDTO>> GetRequestsByUserIdAsync(string userId);
     }
 }

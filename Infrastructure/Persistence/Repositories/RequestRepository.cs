@@ -25,7 +25,7 @@ namespace Persistence.Repositories
             var requestData = await _dbContext.Requests
                 .Include(r => r.Patient)
                     .ThenInclude(d => d.User)
-                .Include(r=> r.Nurse)
+                .Include(r => r.Nurse)
                     .ThenInclude(p => p.User)
                 .Include(r => r.Driver)
                     .ThenInclude(p => p.User)
@@ -150,6 +150,19 @@ namespace Persistence.Repositories
         public async Task<bool> IsAmbulanceDoubleBookedAsync(int ambulanceId, DateTime scheduledDate)
         {
             return await _dbContext.Requests.AnyAsync(r => r.AssignedAmbulanceId == ambulanceId && r.ScheduledDate == scheduledDate && r.Status != RequestStatus.Cancelled);
+        }
+
+        public Task<List<Request>> GetRequestsByUserIdAsync(string userId)
+        {
+            return _dbContext.Requests
+                .Where(r => r.Patient.User.Id == userId)
+                .Include(r => r.Patient)
+                    .ThenInclude(p => p.User)
+                .Include(r => r.Driver)
+                    .ThenInclude(d => d.User)
+                .Include(r => r.Nurse)
+                    .ThenInclude(n => n.User)
+                .ToListAsync();
         }
         #endregion
 

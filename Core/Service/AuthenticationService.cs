@@ -21,6 +21,20 @@ namespace Service
     {
         public async Task<UserDTO> LoginAsync(LoginDTO loginDto)
         {
+            var profile = await _userManager.Users
+                .Include(u => u.DriverProfile)
+                .Include(u => u.NurseProfile)
+                .Include(u => u.PatientProfile)
+                .FirstOrDefaultAsync(u => u.Email == loginDto.Email);
+            var role = await _userManager.GetRolesAsync(profile);
+            var ProfileRole = role.FirstOrDefault() ?? "Patient";
+            int? profileId = ProfileRole switch
+            {
+                "Driver" => profile.DriverProfile?.Id,
+                "Nurse" => profile.NurseProfile.Id,
+                "Patient" => profile.PatientProfile.Id,
+                _ => null
+            };
             var user = await _userManager.FindByEmailAsync(loginDto.Email);
             if (user == null)
                 throw new UnAuthorizedException();
@@ -29,12 +43,13 @@ namespace Service
                 throw new UnAuthorizedException();
             return new UserDTO
             {
+                UserId = user.Id,
+                ProfileId = profileId,
                 Email = user.Email,
                 DisplayName = user.FullName,
                 Token = await CreateTokenAsync(user),
                 FullName = user.FullName,
-                Role = (await _userManager.GetRolesAsync(user)).FirstOrDefault() ?? "User"
-
+                Role = ProfileRole
             };
 
         }

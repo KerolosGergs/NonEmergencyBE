@@ -14,273 +14,105 @@ namespace Presentation.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var response = new GeneralResponse();
-            try
-            {
-                response.Data = await _requestService.GetAllRequestsWithRelatedData();
-                response.Success = true;
-                response.Message = "All requests fetched successfully.";
-            }
-            catch (Exception ex)
-            {
-                response.Success = false;
-                response.Message = ex.Message;
-            }
-            return Ok(response);
+            var result = await _requestService.GetAllRequestsWithRelatedData();
+            return Ok(result);
         }
-
         [HttpGet("available-for-driver")]
         public async Task<IActionResult> GetPendingRequestsForDrivers()
         {
-            var response = new GeneralResponse();
-            try
-            {
-                response.Data = await _requestService.GetAvailableRequestsForDriverAsync();
-                response.Success = true;
-                response.Message = "Driver-available requests fetched successfully.";
-            }
-            catch (Exception ex)
-            {
-                response.Success = false;
-                response.Message = ex.Message;
-            }
-            return Ok(response);
+            var result = await _requestService.GetAvailableRequestsForDriverAsync();
+            return Ok(result);
         }
 
         [HttpGet("available-for-nurse")]
         public async Task<IActionResult> GetPendingRequestsForNurses()
         {
-            var response = new GeneralResponse();
-            try
-            {
-                response.Data = await _requestService.GetAvailableRequestsForNurseAsync();
-                response.Success = true;
-                response.Message = "Nurse-available requests fetched successfully.";
-            }
-            catch (Exception ex)
-            {
-                response.Success = false;
-                response.Message = ex.Message;
-            }
-            return Ok(response);
+            var result = await _requestService.GetAvailableRequestsForNurseAsync();
+            return Ok(result);
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateRequest([FromQuery] string userId, [FromBody] CreateRequestDTO dto)
         {
-            var response = new GeneralResponse();
-            try
-            {
-                response.Data = await _requestService.AddNewRequest(userId, dto);
-                response.Success = true;
-                response.Message = "Request created successfully.";
-            }
-            catch (Exception ex)
-            {
-                response.Success = false;
-                response.Message = ex.Message;
-            }
-            return Ok(response);
+            var result = await _requestService.AddNewRequest(userId, dto);
+            return Ok(result);
         }
+
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var response = new GeneralResponse();
-            try
-            {
-                var dto = new RequestDTO { RequestId = id };
-                var result = await _requestService.GetRequestById(dto);
-                if (result == null)
-                {
-                    response.Success = false;
-                    response.Message = "Request not found.";
-                    return NotFound(response);
-                }
-
-                response.Data = result;
-                response.Success = true;
-                response.Message = "Request fetched successfully.";
-            }
-            catch (Exception ex)
-            {
-                response.Success = false;
-                response.Message = ex.Message;
-            }
-            return Ok(response);
+            var dto = new RequestDTO { RequestId = id };
+            var result = await _requestService.GetRequestById(dto);
+            if (result == null) return NotFound();
+            return Ok(result);
         }
 
         [HttpPut("{id:int}")]
         public async Task<IActionResult> UpdateRequest(int id, [FromBody] UpdateRequestDTO dto)
         {
-            var response = new GeneralResponse();
-            try
-            {
-                if (id != dto.RequestId)
-                {
-                    response.Success = false;
-                    response.Message = "Id mismatch.";
-                    return BadRequest(response);
-                }
+            if (id != dto.RequestId)
+                return BadRequest("Id mismatch");
 
-                response.Data = await _requestService.UpdateRequest(dto);
-                response.Success = true;
-                response.Message = "Request updated successfully.";
-            }
-            catch (Exception ex)
-            {
-                response.Success = false;
-                response.Message = ex.Message;
-            }
-            return Ok(response);
+            var result = await _requestService.UpdateRequest(dto);
+            return Ok(result);
         }
 
         [HttpPut("assign-driver")]
         public async Task<IActionResult> AssignDriverToRequest([FromBody] AssignDriverDTO dto)
         {
-            var response = new GeneralResponse();
-            try
-            {
-                var result = await _requestService.AssignDriverAsync(dto);
-                if (result == null)
-                {
-                    response.Success = false;
-                    response.Message = "Driver is already assigned.";
-                    return Conflict(response);
-                }
-
-                response.Data = result;
-                response.Success = true;
-                response.Message = "Driver assigned successfully.";
-            }
-            catch (Exception ex)
-            {
-                response.Success = false;
-                response.Message = ex.Message;
-            }
-            return Ok(response);
+            var result = await _requestService.AssignDriverAsync(dto);
+            if (result == null) return Conflict("Driver Is Assigned Already");
+            return Ok(result);
         }
 
         [HttpPut("assign-nurse")]
         public async Task<IActionResult> AssignNurseToRequest([FromBody] AssignNurseDTO dto)
         {
-            var response = new GeneralResponse();
-            try
-            {
-                var result = await _requestService.AssignNurseAsync(dto);
-                if (result == null)
-                {
-                    response.Success = false;
-                    response.Message = "Nurse is already assigned.";
-                    return Conflict(response);
-                }
-
-                response.Data = result;
-                response.Success = true;
-                response.Message = "Nurse assigned successfully.";
-            }
-            catch (Exception ex)
-            {
-                response.Success = false;
-                response.Message = ex.Message;
-            }
-            return Ok(response);
+            var result = await _requestService.AssignNurseAsync(dto);
+            if (result == null) return Conflict("Nurse Is Assigned Already");
+            return Ok(result);
         }
 
         [HttpPut("update-status")]
         public async Task<IActionResult> UpdateStatus([FromBody] UpdateRequestStatusDTO dto)
         {
-            var response = new GeneralResponse();
-            try
-            {
-                var result = await _requestService.UpdateStatusAsync(dto);
-                if (result == null)
-                {
-                    response.Success = false;
-                    response.Message = "Request not found.";
-                    return NotFound(response);
-                }
-
-                response.Data = result;
-                response.Success = true;
-                response.Message = "Status updated successfully.";
-            }
-            catch (Exception ex)
-            {
-                response.Success = false;
-                response.Message = ex.Message;
-            }
-            return Ok(response);
+            var result = await _requestService.UpdateStatusAsync(dto);
+            if (result == null) return NotFound();
+            return Ok(result);
         }
 
         [HttpPut("cancel/{id}")]
         public async Task<IActionResult> Cancel(int id)
         {
-            var response = new GeneralResponse();
-            try
-            {
-                var result = await _requestService.CancelRequestAsync(id);
-                if (!result)
-                {
-                    response.Success = false;
-                    response.Message = "Request not found.";
-                    return NotFound(response);
-                }
-
-                response.Success = true;
-                response.Message = "Request cancelled successfully.";
-            }
-            catch (Exception ex)
-            {
-                response.Success = false;
-                response.Message = ex.Message;
-            }
-            return Ok(response);
+            var result = await _requestService.CancelRequestAsync(id);
+            if (!result) return NotFound();
+            return Ok();
         }
 
         [HttpPost("confirm-request/{requestId}")]
         public async Task<IActionResult> ConfirmRequestByPatient(int requestId)
         {
-            var response = new GeneralResponse();
-            try
-            {
-                var tripDto = await _requestService.ConfirmPatientAsync(requestId);
-                if (tripDto == null)
-                {
-                    response.Success = false;
-                    response.Message = "Request not found or cannot be confirmed.";
-                    return NotFound(response);
-                }
-
-                response.Data = tripDto;
-                response.Success = true;
-                response.Message = "Request confirmed successfully.";
-            }
-            catch (Exception ex)
-            {
-                response.Success = false;
-                response.Message = ex.Message;
-            }
-            return Ok(response);
+            var tripDto = await _requestService.ConfirmPatientAsync(requestId);
+            if (tripDto == null)
+                return NotFound();
+            return Ok(tripDto);
         }
-
         [HttpGet("distance")]
         public async Task<IActionResult> GetDistance([FromQuery] string from, [FromQuery] string to)
         {
-            var response = new GeneralResponse();
-            try
-            {
-                var km = await _distanceService.CalculateKMAsync(from, to);
-                response.Success = true;
-                response.Message = "Distance calculated successfully.";
-                response.Data = new { Distance = km };
-            }
-            catch (Exception ex)
-            {
-                response.Success = false;
-                response.Message = ex.Message;
-            }
-            return Ok(response);
+            var km = await _distanceService.CalculateKMAsync(from, to);
+            return Ok(new { Distance = km });
+        }
+        //Get Request By User Id
+        [HttpGet("user/{userId}")]
+        public async Task<IActionResult> GetRequestsByUserId(string userId)
+        {
+            var result = await _requestService.GetRequestsByUserIdAsync(userId);
+            if (result == null || !result.Any())
+                return NotFound("No requests found for this user.");
+            return Ok(result);
+
         }
     }
 }

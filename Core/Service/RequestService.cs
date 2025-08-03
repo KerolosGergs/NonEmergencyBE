@@ -22,7 +22,7 @@ namespace Service
         public async Task<IEnumerable<RequestDTO>> GetAllRequestsWithRelatedData()
         {
             var requests = await _requestRepo.GetAllWithIncludeData();
-            return requests.Select(r =>r.ToRequestDTO());
+            return requests.Select(r => r.ToRequestDTO());
         }
         public async Task<IEnumerable<RequestDTO>> GetAvailableRequestsForDriverAsync()
         {
@@ -103,12 +103,12 @@ namespace Service
             if (patient == null)
                 throw new Exception("المريض غير موجود");
 
-            //// Double booking validation
-            //if (createRequestDTO. > 0)
-            //{
-            //    if (await _requestRepo.IsAmbulanceDoubleBookedAsync(createRequestDTO.AssignedAmbulanceId, createRequestDTO.ScheduledDate))
-            //        throw new Exception("سيارة الإسعاف محجوزة في هذا الموعد!");
-            //}
+            // Double booking validation
+            if (createRequestDTO.AssignedAmbulanceId > 0)
+            {
+                if (await _requestRepo.IsAmbulanceDoubleBookedAsync(createRequestDTO.AssignedAmbulanceId, createRequestDTO.ScheduledDate))
+                    throw new Exception("سيارة الإسعاف محجوزة في هذا الموعد!");
+            }
 
             var newRequest = new Request
             {
@@ -118,16 +118,15 @@ namespace Service
                 ScheduledDate = createRequestDTO.ScheduledDate,
                 EmergencyType = createRequestDTO.EmergencyType,
                 Notes = createRequestDTO.Notes,
-                //AssignedAmbulanceId = createRequestDTO.AssignedAmbulanceId,
+                AssignedAmbulanceId = createRequestDTO.AssignedAmbulanceId,
                 Status = RequestStatus.Pending,
                 PatientId = patient.Id
             };
             await _requestRepo.AddAsync(newRequest);
             await _requestRepo.SaveChangesAsync();
 
-            var createdRequest = await _requestRepo.GetAllWithIncludeData();
-          var request = createdRequest.Where(i => i.PatientId == newRequest.PatientId && i.ScheduledDate == newRequest.ScheduledDate).FirstOrDefault();
-            return request.ToRequestDTO();
+            var createdRequest = await _requestRepo.GetByIdWithReletadData(newRequest.RequestId);
+            return createdRequest.ToRequestDTO();
         }
 
         public async Task<TripDTO?> ConfirmPatientAsync(int requestId)
@@ -152,6 +151,15 @@ namespace Service
             request.Status = Shared.RequestStatus.Cancelled;
             await _requestRepo.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<IEnumerable<RequestDTO>> GetRequestsByUserIdAsync(string userId)
+        {
+            var patient = await _patientRepo.GetPatientByUserIdAsync(userId);
+            if (patient == null)
+                throw new Exception("المريض غير موجود");
+            var requests = await _requestRepo.GetRequestsByUserIdAsync(patient.UserId);
+            return requests.Select(r => r.ToRequestDTO());
         }
     }
 }

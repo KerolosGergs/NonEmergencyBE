@@ -117,6 +117,7 @@ namespace Presentation.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             var response = new GeneralResponse();
+
             try
             {
                 var deleted = await driverService.DeleteDriverAsync(id);
@@ -129,14 +130,20 @@ namespace Presentation.Controllers
 
                 response.Success = true;
                 response.Message = "Driver deleted successfully.";
+                return Ok(response);
+            }
+            catch (InvalidOperationException ex)
+            {
+                response.Success = false;
+                response.Message = ex.Message;
+                return BadRequest(response);
             }
             catch (Exception ex)
             {
                 response.Success = false;
-                response.Message = ex.Message;
+                response.Message = "An error occurred while deleting the driver.";
+                return StatusCode(500, response);
             }
-
-            return Ok(response);
         }
 
         [HttpPatch("{id}/toggle-availability")]

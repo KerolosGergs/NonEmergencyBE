@@ -11,5 +11,6 @@ namespace DomainLayer.Contracts
     {
         Task<IEnumerable<Driver>> GetAllWithRelatedData();
         Task<Driver> GetByIdWithRelatedData(int id);
+        Task<Driver> GetByIdWithRequestsAndTripsAsync(int driverId);
     }
 }
