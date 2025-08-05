@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,5 +17,6 @@ namespace Shared.DTOS.Registeration
         public string MedicalHistory { get; set; }
         public Gender Gender { get; set; }
         public DateTime DateOfBirth { get; set; }
+        public IFormFile Image { get; set; }
     }
 }

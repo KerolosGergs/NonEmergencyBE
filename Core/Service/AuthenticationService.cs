@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using BLL.Services.FileService;
 using DomainLayer.Contracts;
 using DomainLayer.Exceptions;
 using DomainLayer.Models.Identity_Module;
@@ -12,11 +13,15 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using ServiceAbstraction;
+using Shared.DTOS.Driver;
+using Shared.DTOS.Nurse;
 using Shared.DTOS.Registeration;
 
 namespace Service
 {
-    public class AuthenticationService(UserManager<ApplicationUser> _userManager,
+    public class AuthenticationService(
+        UserManager<ApplicationUser> _userManager,
+        IFileService _fileService,
         IDriverRepository _driverRepository, INurseRepository _nurseRepository,IPatientRepository _patientRepository) : IAuthenticationService
     {
         public async Task<UserDTO> LoginAsync(LoginDTO loginDto)
@@ -74,13 +79,20 @@ namespace Service
             }
 
             await _userManager.AddToRoleAsync(driverUser, "Driver");
-
+            FileService fs = new FileService();
+            var imgUrl = ""; 
+            if (driverDto.Image != null)
+            {
+                imgUrl =await fs.UploadFileAsync(driverDto.Image, fs._DriverFileName);
+            }
             var driver = new Driver
             {
                 LicenseNumber = driverDto.LicenseNumber,
                 PhoneNumber = driverDto.PhoneNumber,
                 IsAvailable = driverDto.IsAvailable,
-                UserId = driverUser.Id
+                UserId = driverUser.Id,
+                ImgUrl= imgUrl
+                
             };
             await _driverRepository.AddAsync(driver);
             await _driverRepository.SaveChangesAsync();
@@ -114,12 +126,19 @@ namespace Service
                 throw new ValidationException(Errors);
             }
             await _userManager.AddToRoleAsync(nurseUser, "Nurse");
+            FileService fs = new FileService();
+            var imgUrl = "";
+            if (nurseDto.Image != null)
+            {
+                imgUrl = await fs.UploadFileAsync(nurseDto.Image, fs._nurseFileName);
+            }
             var nurse = new Nurse
             {
                 Certification = nurseDto.Certification,
                 PhoneNumber = nurseDto.PhoneNumber,
                 UserId = nurseUser.Id,
-                IsAvailable = true
+                IsAvailable = true,
+                ImgUrl = imgUrl,
             };
             await _nurseRepository.AddAsync(nurse);
             await _nurseRepository.SaveChangesAsync();
@@ -151,15 +170,23 @@ namespace Service
                 throw new ValidationException(Errors);
             }
             await _userManager.AddToRoleAsync(patientUser, "Patient");
+            FileService fs = new FileService();
+            var imgUrl = "";
+            if (patientDto.Image != null)
+            {
+                imgUrl = await fs.UploadFileAsync(patientDto.Image, fs._nurseFileName);
+            }
             var patient = new Patient
             {
-                
+
                 Address = patientDto.Address,
                 MedicalHistory = patientDto.MedicalHistory,
                 Gender = patientDto.Gender,
                 DateOfBirth = patientDto.DateOfBirth,
                 PhoneNumber = patientDto.PhoneNumber,
-                UserId = patientUser.Id
+                UserId = patientUser.Id,
+                ImgUrl = imgUrl
+
             };
             await _patientRepository.AddAsync(patient);
             await _patientRepository.SaveChangesAsync();

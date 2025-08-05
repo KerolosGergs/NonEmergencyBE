@@ -36,8 +36,9 @@ namespace Persistence.Repositories
         {
             return await _dbContext.Requests
                 .Where(r => r.PatientId == patientId)
-                .Include(r => r.Driver).ThenInclude(d => d.User)
                 .Include(r => r.Nurse).ThenInclude(n => n.User)
+                .Include(r => r.Driver).ThenInclude(d => d.User)
+                //.ThenInclude(r=>r.DriverProfile.Ambulances)
                 .ToListAsync();
         }
 

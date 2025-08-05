@@ -14,7 +14,7 @@ namespace Presentation.Controllers
     {
         [HttpPost("register/driver")]
         //[Authorize(Roles = "Admin")]
-        public async Task<IActionResult> RegisterDriver([FromBody] DriverRegisterDTO driverDto)
+        public async Task<IActionResult> RegisterDriver([FromForm] DriverRegisterDTO driverDto)
         {
             var response = new GeneralResponse();
             try
@@ -35,7 +35,7 @@ namespace Presentation.Controllers
 
         [HttpPost("register/nurse")]
         //[Authorize(Roles = "Admin")]
-        public async Task<IActionResult> RegisterNurse([FromBody] NurseRegisterDTO nurseDto)
+        public async Task<IActionResult> RegisterNurse([FromForm] NurseRegisterDTO nurseDto)
         {
             var response = new GeneralResponse();
             try
@@ -56,8 +56,9 @@ namespace Presentation.Controllers
 
         [HttpPost("register/patient")]
         [AllowAnonymous]
-        public async Task<IActionResult> RegisterPatient([FromBody] PatientRegisterDTO patientDto)
+        public async Task<IActionResult> RegisterPatient([FromForm] PatientRegisterDTO patientDto)
         {
+
             var response = new GeneralResponse();
             try
             {

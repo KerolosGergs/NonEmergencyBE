@@ -17,8 +17,10 @@ namespace DomainLayer.Models.Identity_Module
         public Gender Gender { get; set; }
         public DateTime DateOfBirth { get; set; }
         public string PhoneNumber { get; set; }
+        public string ImgUrl { get; set; }
         public ICollection<Request> Requests { get; set; }
         public string UserId { get; set; }
         public ApplicationUser User { get; set; }
+
     }
 }

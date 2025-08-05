@@ -87,11 +87,21 @@ namespace Service
                 EmergencyType = r.EmergencyType,
                 Status = r.Status,
                 Notes = r.Notes,
-                AssignedAmbulanceId = r.AssignedAmbulanceId!.Value,
                 PatientId = r.PatientId,
+
+                // Driver Info (Safe Access)
                 DriverId = r.DriverId,
-                NurseId = r.NurseId
+                DriverName = r.Driver != null && r.Driver.User != null ? r.Driver.User.FullName ?? "" : "",
+                DriverPhone = r.Driver != null ? r.Driver.PhoneNumber ?? "" : "",
+                DriverImg = r.Driver != null ? r.Driver.ImgUrl ?? "" : "",
+
+                // Nurse Info (Safe Access)
+                NurseId = r.NurseId,
+                NurseName = r.Nurse != null && r.Nurse.User != null ? r.Nurse.User.FullName ?? "" : "",
+                NursePhone = r.Nurse != null ? r.Nurse.PhoneNumber ?? "" : "",
+                NurseImg = r.Nurse != null ? r.Nurse.ImgUrl ?? "" : ""
             });
+
         }
 
         public async Task<IEnumerable<TripDTO>> GetTripsForPatientAsync(int patientId)

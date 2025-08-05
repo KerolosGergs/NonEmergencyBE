@@ -16,6 +16,7 @@ namespace DomainLayer.Models.Identity_Module
         public string PhoneNumber { get; set; }
         public bool IsAvailable { get; set; }
         public string UserId { get; set; }
+        public string ImgUrl { get; set; }
         public ApplicationUser User { get; set; }
         public ICollection<Request> AssignedRequests { get; set; }
         public ICollection<Trip> Trips { get; set; }
