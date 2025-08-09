@@ -7,7 +7,6 @@ using ServiceAbstraction;
 using Service;
 using DomainLayer.Contracts;
 using Persistence.Repositories;
-using Core.Service;
 
 namespace NonEmergencyAmbulance
 {
@@ -54,8 +53,6 @@ namespace NonEmergencyAmbulance
             builder.Services.AddScoped<IRatingService, RatingService>();
             builder.Services.AddScoped<IReportRepository, ReportRepository>();
             builder.Services.AddScoped<IReportService, ReportService>();
-            builder.Services.AddScoped<IProfitDistributionService,ProfitDistributionService>();
-            builder.Services.AddScoped<IWithdrawalService, WithdrawalService>();
             builder.Services.AddHttpClient<IGeocodingService, NominatimGeocodingService>(client =>
             {
                 client.DefaultRequestHeaders.UserAgent.ParseAdd("NonEmergencyAmbulanceApp/1.0");
@@ -79,6 +76,7 @@ namespace NonEmergencyAmbulance
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+            app.UseStaticFiles();
 
             app.UseHttpsRedirection();
             app.UseAuthorization();

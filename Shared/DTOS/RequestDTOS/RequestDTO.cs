@@ -22,9 +22,11 @@ namespace Shared.DTOS.RequestDTOS
         public string? PatientPhone { get; set; }
         public string? PatientAddress { get; set; }
         public string? PatientImageUrl { get; set; }
+        //Driver Info
         public int? DriverId { get; set; }
         public string? DriverName { get; set; }
         public string? DriverPhone { get; set; }
+        public string? DriverImg { get; set; }
         public string? AmbulancePlateNumber { get; set; }
         public string? AmbulanceType { get; set; }
 
@@ -32,6 +34,7 @@ namespace Shared.DTOS.RequestDTOS
         public int? NurseId { get; set; }
         public string? NurseName { get; set; }
         public string? NursePhone { get; set; }
+        public string? NurseImg { get; set; }
     }
 
 }
