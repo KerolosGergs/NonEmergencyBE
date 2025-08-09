@@ -8,6 +8,7 @@ using DomainLayer.Models.Ambulance_Module;
 using DomainLayer.Models.Identity_Module;
 using DomainLayer.Models.Request_Module;
 using DomainLayer.Models.Trip_Module;
+using DomainLayer.Models.Withdrawal_Module;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,6 +28,8 @@ namespace Persistence.Data
         public DbSet<Trip> Trips { get; set; }
         public DbSet<Ambulance> Ambulances { get; set; }
         public DbSet<Rating> Ratings { get; set; }
+        public DbSet<ProfitDistribution> ProfitDistributions { get; set; }
+        public DbSet<WithdrawalRequest> WithdrawalRequests { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

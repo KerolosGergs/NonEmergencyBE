@@ -10,10 +10,11 @@ using Service.Mapping;
 using ServiceAbstraction;
 using Shared;
 using Shared.DTOS.TripDTOs;
+using Shared.DTOS.ProfitDTOS;
 
 namespace Service
 {
-    public class TripService(ITripRepository _tripRepo ,IRequestRepository _requestRepo , IDistanceService _distanceService ,ITripPriceCalculator _priceCalculator) : ITripService
+    public class TripService(ITripRepository _tripRepo ,IRequestRepository _requestRepo , IDistanceService _distanceService ,ITripPriceCalculator _priceCalculator, IProfitDistributionService _profitService) : ITripService
     {
         public async Task<TripDTO> CreateTripFromRequestAsync(int requestId)
         {
@@ -95,6 +96,18 @@ namespace Service
             trip.TripStatus = TripStatus.Completed;
             trip.EndTime = DateTime.UtcNow;
             await _tripRepo.SaveChangesAsync();
+            
+            // توزيع الأرباح تلقائياً بعد إكمال الرحلة
+            try
+            {
+                await _profitService.DistributeTripProfitsAsync(tripId);
+            }
+            catch (Exception ex)
+            {
+                // تسجيل الخطأ ولكن لا نوقف العملية
+                Console.WriteLine($"خطأ في توزيع الأرباح للرحلة {tripId}: {ex.Message}");
+            }
+            
             return true;
         }
     }
