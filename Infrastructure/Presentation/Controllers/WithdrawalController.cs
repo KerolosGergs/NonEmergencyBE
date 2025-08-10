@@ -1,15 +1,12 @@
 using DomainLayer.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ServiceAbstraction;
 using Shared.DTOS.WithdrawalDTOS;
-using System.Security.Claims;
 
 namespace Infrastructure.Presentation.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles = "Admin")]
     public class WithdrawalController : ControllerBase
     {
         private readonly IWithdrawalService _withdrawalService;
@@ -83,16 +80,12 @@ namespace Infrastructure.Presentation.Controllers
             }
         }
 
-        [HttpPost("approve/{requestId}")]
-        public async Task<ActionResult<WithdrawalRequestDTO>> ApproveWithdrawalRequest(int requestId, [FromBody] string? notes = null)
+        [HttpPost("approve/{requestId}/{adminId}")]
+        public async Task<ActionResult<WithdrawalRequestDTO>> ApproveWithdrawalRequest(int requestId, string adminId, [FromBody] string? notes = null)
         {
             var response = new GeneralResponse();
             try
             {
-                var adminId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(adminId))
-                    return Unauthorized();
-
                 var result = await _withdrawalService.ApproveWithdrawalRequestAsync(requestId, adminId, notes);
                 response.Data = result;
                 response.Success = true;
@@ -107,15 +100,12 @@ namespace Infrastructure.Presentation.Controllers
             }
         }
 
-        [HttpPost("reject/{requestId}")]
-        public async Task<ActionResult<WithdrawalRequestDTO>> RejectWithdrawalRequest(int requestId, [FromBody] string? notes = null)
+        [HttpPost("reject/{requestId}/{adminId}")]
+        public async Task<ActionResult<WithdrawalRequestDTO>> RejectWithdrawalRequest(int requestId, string adminId, [FromBody] string? notes = null)
         {
             var response = new GeneralResponse();
             try
             {
-                var adminId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(adminId))
-                    return Unauthorized();
                 var result = await _withdrawalService.RejectWithdrawalRequestAsync(requestId, adminId, notes);
                 response.Data = result;
                 response.Success = true;
@@ -130,15 +120,12 @@ namespace Infrastructure.Presentation.Controllers
             }
         }
 
-        [HttpPost("complete/{requestId}")]
-        public async Task<ActionResult<WithdrawalRequestDTO>> CompleteWithdrawalRequest(int requestId)
+        [HttpPost("complete/{requestId}/{adminId}")]
+        public async Task<ActionResult<WithdrawalRequestDTO>> CompleteWithdrawalRequest(int requestId, string adminId)
         {
             var response = new GeneralResponse();
             try
             {
-                var adminId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(adminId))
-                    return Unauthorized();
                 var result = await _withdrawalService.CompleteWithdrawalRequestAsync(requestId, adminId);
                 response.Data = result;
                 response.Success = true;
@@ -160,7 +147,7 @@ namespace Infrastructure.Presentation.Controllers
             try
             {
                 var allRequests = await _withdrawalService.GetAllWithdrawalRequestsAsync();
-                
+
                 var summary = new WithdrawalSummaryDTO
                 {
                     TotalRequests = allRequests.Count,
@@ -185,4 +172,4 @@ namespace Infrastructure.Presentation.Controllers
             }
         }
     }
-} 
+}

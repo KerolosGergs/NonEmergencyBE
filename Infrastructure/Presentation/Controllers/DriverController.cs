@@ -68,7 +68,7 @@ namespace Presentation.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] DriverRegisterDTO dto)
+        public async Task<IActionResult> Create([FromForm] DriverRegisterDTO dto)
         {
             var response = new GeneralResponse();
             try
