@@ -7,6 +7,8 @@ using ServiceAbstraction;
 using Service;
 using DomainLayer.Contracts;
 using Persistence.Repositories;
+using Core.Service;
+using BLL.Services.FileService;
 
 namespace NonEmergencyAmbulance
 {
@@ -53,6 +55,9 @@ namespace NonEmergencyAmbulance
             builder.Services.AddScoped<IRatingService, RatingService>();
             builder.Services.AddScoped<IReportRepository, ReportRepository>();
             builder.Services.AddScoped<IReportService, ReportService>();
+            builder.Services.AddScoped<IWithdrawalService, WithdrawalService>();
+            builder.Services.AddScoped<IProfitDistributionService, ProfitDistributionService>();
+            builder.Services.AddScoped<IFileService, FileService>();
             builder.Services.AddHttpClient<IGeocodingService, NominatimGeocodingService>(client =>
             {
                 client.DefaultRequestHeaders.UserAgent.ParseAdd("NonEmergencyAmbulanceApp/1.0");

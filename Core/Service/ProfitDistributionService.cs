@@ -20,17 +20,23 @@ namespace Core.Service
         private readonly ITripRepository _tripRepository;
         private readonly IWithdrawalRequestRepository _withdrawalRepository;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IDriverRepository _driverRepository;
+        private readonly INurseRepository _nurseRepository;
 
         public ProfitDistributionService(
             IProfitDistributionRepository profitDistributionRepository,
             ITripRepository tripRepository,
             IWithdrawalRequestRepository withdrawalRepository,
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager,
+            IDriverRepository driverRepository,
+            INurseRepository nurseRepository)
         {
             _profitDistributionRepository = profitDistributionRepository;
             _tripRepository = tripRepository;
             _withdrawalRepository = withdrawalRepository;
             _userManager = userManager;
+            _driverRepository = driverRepository;
+            _nurseRepository = nurseRepository;
         }
 
         public async Task<ProfitDistributionDTO> DistributeTripProfitsAsync(int tripId)
@@ -49,8 +55,8 @@ namespace Core.Service
             if (existingDistribution != null)
                 throw new ArgumentException("تم توزيع الأرباح لهذه الرحلة مسبقاً");
             // الحصول على معلومات السائق والممرضة
-            var driver = await _userManager.FindByIdAsync(trip.Driver.UserId);
-            var nurse = trip.NurseId.HasValue ? await _userManager.FindByIdAsync(trip.Nurse.UserId) : null;
+            var driver = await _driverRepository.GetByIdWithRelatedData(trip.DriverId);
+            var nurse = trip.NurseId.HasValue ? await _nurseRepository.GetByIdWithRelatedData(trip.NurseId.Value) : null;
 
             // حساب الأرباح
             var driverProfit = trip.Price * 0.40m;
@@ -63,9 +69,9 @@ namespace Core.Service
                 TripId = tripId,
                 TotalTripPrice = trip.Price,
                 DriverProfit = driverProfit,
-                DriverId = driver.Id,
+                DriverId = driver.UserId,
                 NurseProfit = nurse != null ? nurseProfit : null,
-                NurseId = nurse?.Id,
+                NurseId = nurse?.UserId,
                 PlatformProfit = platformProfit,
                 DistributionDate = DateTime.UtcNow,
                 DriverPercentage = 0.40m,
@@ -77,14 +83,14 @@ namespace Core.Service
             await _profitDistributionRepository.AddAsync(profitDistribution);
 
             // تحديث رصيد السائق
-            driver.Balance += driverProfit;
-            await _userManager.UpdateAsync(driver);
+            driver.User.Balance += driverProfit;
+             _driverRepository.Update(driver);
 
             // تحديث رصيد الممرضة إذا كانت موجودة
             if (nurse != null)
             {
-                nurse.Balance += nurseProfit;
-                await _userManager.UpdateAsync(nurse);
+                nurse.User.Balance += nurseProfit;
+                _nurseRepository.Update(nurse);
             }
 
             // تحويل إلى DTO
@@ -103,11 +109,11 @@ namespace Core.Service
                 },
                 TotalTripPrice = trip.Price,
                 DriverProfit = driverProfit,
-                DriverId = driver.Id,
-                DriverName = driver.FullName,
+                DriverId = driver.UserId,
+                DriverName = driver.User.FullName,
                 NurseProfit = nurse != null ? nurseProfit : null,
-                NurseId = nurse?.Id,
-                NurseName = nurse?.FullName,
+                NurseId = nurse?.UserId,
+                NurseName = nurse?.User.FullName,
                 PlatformProfit = platformProfit,
                 DistributionDate = profitDistribution.DistributionDate,
                 DriverPercentage = 0.40m,

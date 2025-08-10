@@ -1,16 +1,12 @@
 using DomainLayer.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ServiceAbstraction;
-using Shared.DTOS.ProfitDTOS;
 using Shared.DTOS.WithdrawalDTOS;
-using System.Security.Claims;
 
 namespace Infrastructure.Presentation.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
     public class ProfitController : ControllerBase
     {
         private readonly IProfitDistributionService _profitService;
@@ -25,7 +21,6 @@ namespace Infrastructure.Presentation.Controllers
         }
 
         [HttpPost("distribute/{tripId}")]
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DistributeTripProfits(int tripId)
         {
             var response = new GeneralResponse();
@@ -43,16 +38,12 @@ namespace Infrastructure.Presentation.Controllers
             return Ok(response);
         }
 
-        [HttpGet("balance")]
-        public async Task<IActionResult> GetUserBalance()
+        [HttpGet("balance/{userId}")]
+        public async Task<IActionResult> GetUserBalance(string userId)
         {
             var response = new GeneralResponse();
             try
             {
-                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(userId))
-                    return Unauthorized();
-
                 response.Data = await _profitService.GetUserBalanceAsync(userId);
                 response.Success = true;
                 response.Message = "تم جلب الرصيد بنجاح";
@@ -65,16 +56,12 @@ namespace Infrastructure.Presentation.Controllers
             return Ok(response);
         }
 
-        [HttpGet("history")]
-        public async Task<IActionResult> GetUserProfitHistory()
+        [HttpGet("history/{userId}")]
+        public async Task<IActionResult> GetUserProfitHistory(string userId)
         {
             var response = new GeneralResponse();
             try
             {
-                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(userId))
-                    return Unauthorized();
-
                 response.Data = await _profitService.GetUserProfitHistoryAsync(userId);
                 response.Success = true;
                 response.Message = "تم جلب سجل الأرباح بنجاح";
@@ -88,7 +75,6 @@ namespace Infrastructure.Presentation.Controllers
         }
 
         [HttpGet("all")]
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllProfitDistributions()
         {
             var response = new GeneralResponse();
@@ -107,7 +93,6 @@ namespace Infrastructure.Presentation.Controllers
         }
 
         [HttpGet("trip/{tripId}")]
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetProfitDistributionByTrip(int tripId)
         {
             var response = new GeneralResponse();
@@ -133,16 +118,12 @@ namespace Infrastructure.Presentation.Controllers
             return Ok(response);
         }
 
-        [HttpPost("withdrawal/request")]
-        public async Task<IActionResult> CreateWithdrawalRequest([FromBody] CreateWithdrawalRequestDTO request)
+        [HttpPost("withdrawal/request/{userId}")]
+        public async Task<IActionResult> CreateWithdrawalRequest(string userId, [FromBody] CreateWithdrawalRequestDTO request)
         {
             var response = new GeneralResponse();
             try
             {
-                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(userId))
-                    return Unauthorized();
-
                 request.UserId = userId;
                 response.Data = await _withdrawalService.CreateWithdrawalRequestAsync(request);
                 response.Success = true;
@@ -156,16 +137,12 @@ namespace Infrastructure.Presentation.Controllers
             return Ok(response);
         }
 
-        [HttpGet("withdrawal/requests")]
-        public async Task<IActionResult> GetUserWithdrawalRequests()
+        [HttpGet("withdrawal/requests/{userId}")]
+        public async Task<IActionResult> GetUserWithdrawalRequests(string userId)
         {
             var response = new GeneralResponse();
             try
             {
-                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(userId))
-                    return Unauthorized();
-
                 response.Data = await _withdrawalService.GetUserWithdrawalRequestsAsync(userId);
                 response.Success = true;
                 response.Message = "تم جلب طلبات السحب بنجاح";
@@ -178,16 +155,12 @@ namespace Infrastructure.Presentation.Controllers
             return Ok(response);
         }
 
-        [HttpDelete("withdrawal/request/{requestId}")]
-        public async Task<IActionResult> CancelWithdrawalRequest(int requestId)
+        [HttpDelete("withdrawal/request/{requestId}/{userId}")]
+        public async Task<IActionResult> CancelWithdrawalRequest(int requestId, string userId)
         {
             var response = new GeneralResponse();
             try
             {
-                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(userId))
-                    return Unauthorized();
-
                 response.Data = await _withdrawalService.CancelWithdrawalRequestAsync(requestId, userId);
                 response.Success = true;
                 response.Message = "تم إلغاء طلب السحب بنجاح";
@@ -200,4 +173,4 @@ namespace Infrastructure.Presentation.Controllers
             return Ok(response);
         }
     }
-} 
+}
