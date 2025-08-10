@@ -35,6 +35,8 @@ namespace Shared.DTOS.RequestDTOS
         public string? NurseName { get; set; }
         public string? NursePhone { get; set; }
         public string? NurseImg { get; set; }
+
+        public double Price { get;set; }
     }
 
 }

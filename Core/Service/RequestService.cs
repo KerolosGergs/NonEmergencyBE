@@ -16,7 +16,7 @@ namespace Service
 {
     public class RequestService(IRequestRepository _requestRepo, IPatientRepository _patientRepo, ITripService _tripService, IAmbulanceRepository ambulanceRepository) : IRequestService
     {
-        private readonly IAmbulanceRepository _ambulanceRepository;
+        //private readonly IAmbulanceRepository _ambulanceRepository;
         //Add New Request
 
         public async Task<IEnumerable<RequestDTO>> GetAllRequestsWithRelatedData()
@@ -53,7 +53,7 @@ namespace Service
                 return null;
 
             // Auto-assign ambulance linked to this driver
-            var ambulance = await _ambulanceRepository.GetAllWithRelatedData();
+            var ambulance = await ambulanceRepository.GetAllWithRelatedData();
             var driverAmbulance = ambulance.FirstOrDefault(a => a.DriverId == assignDriverDTO.DriverId);
             if (driverAmbulance != null)
             {
@@ -120,7 +120,9 @@ namespace Service
                 Notes = createRequestDTO.Notes,
                 AssignedAmbulanceId = createRequestDTO.AssignedAmbulanceId,
                 Status = RequestStatus.Pending,
-                PatientId = patient.Id
+                PatientId = patient.Id,
+                Price=createRequestDTO.Price
+                
             };
             await _requestRepo.AddAsync(newRequest);
             await _requestRepo.SaveChangesAsync();
@@ -141,6 +143,9 @@ namespace Service
                 await _requestRepo.SaveChangesAsync();
             }
             var tripDto = await _tripService.CreateTripFromRequestAsync(requestId);
+            request.Status = RequestStatus.Accepted;
+            await _requestRepo.SaveChangesAsync();
+
             return tripDto;
         }
 

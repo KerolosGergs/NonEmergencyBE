@@ -120,7 +120,8 @@ namespace Persistence.Repositories
                 throw new ArgumentException("Invalid request ID", nameof(requestId));
             return await _dbContext.Requests
                 .Include(r => r.Patient).ThenInclude(p => p.User)
-                .Include(r => r.Driver).ThenInclude(d => d.User)
+                .Include(r => r.Driver).ThenInclude(a=>a.Ambulances)
+                .Include(r=>r.Driver).ThenInclude(p=>p.User)
                 .Include(r => r.Nurse).ThenInclude(n => n.User)
                 .FirstOrDefaultAsync(r => r.RequestId == requestId);
         }

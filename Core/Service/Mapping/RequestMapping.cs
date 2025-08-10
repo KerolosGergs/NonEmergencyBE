@@ -34,6 +34,7 @@ namespace Service.Mapping
                 NursePhone = request.Nurse?.PhoneNumber,
                 NurseId = request.NurseId,
                 NurseName = request.Nurse?.User?.FullName,
+                Price =request.Price
             };
         }
         public static AssignUpdateRequestDTO ToAssignUpdateRequestDTO(this Request request)

@@ -29,8 +29,8 @@ namespace Service
             if (existingTrip != null)
                 throw new Exception("Trip already exists");
 
-            var distance = await _distanceService.CalculateKMAsync(request.PickupAddress, request.DropOffAddress);
-            var price = _priceCalculator.Calculate(request, distance);
+            var distance =request.Price/10;
+            var price = request.Price;
 
             var trip = new Trip
             {
@@ -38,10 +38,10 @@ namespace Service
                 StartTime = request.ScheduledDate,
                 EndTime = request.ScheduledDate.AddHours(1),
                 DistanceKM = distance,
-                Price = price,
+                Price = Decimal.Parse(price.ToString()),
                 DriverId = request.DriverId.Value,
                 NurseId = request.NurseId,
-                AmbulanceId = request.AssignedAmbulanceId!.Value,
+                AmbulanceId = request.Driver.Ambulances.FirstOrDefault().AmbulanceId,
                 TripStatus = TripStatus.Assigned
             };
 

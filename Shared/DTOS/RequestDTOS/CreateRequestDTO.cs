@@ -14,5 +14,6 @@ namespace Shared.DTOS.RequestDTOS
         public string EmergencyType { get; set; }
         public string Notes { get; set; }
         public int AssignedAmbulanceId { get; set; }
+        public double Price { get; set; }
     }
 }
