@@ -60,26 +60,29 @@ namespace Service
             };
         }
 
-        public async Task<DriverDTO> UpdateDriverAsync(int id, DriverDTO dto)
+        public async Task UpdateDriverAsync(int id, UpdateDriverDto dto)
         {
-            var driver = await driverRepository.GetByIdAsync(id);
-            if (driver == null) return null;
+            var driver = await driverRepository.GetByIdWithRelatedData(id);
+            if (driver == null)
+                throw new KeyNotFoundException($"Driver with ID {id} not found.");
+
+            // Update driver properties
             driver.LicenseNumber = dto.LicenseNumber;
             driver.PhoneNumber = dto.PhoneNumber;
             driver.IsAvailable = dto.IsAvailable;
-            driver.UserId = dto.UserId;
-            driverRepository.Update(driver);
+
+            // Ensure User is loaded and not null
+            if (driver.User == null)
+                throw new Exception("Associated User not found.");
+
+            driver.User.FullName = dto.UserFullName;
+
+            // Update entity (optional if EF is tracking)
+            driverRepository.Update(driver); // You can remove this if EF Core is tracking changes
+
             await driverRepository.SaveChangesAsync();
-            return new DriverDTO
-            {
-                Id = driver.Id,
-                LicenseNumber = driver.LicenseNumber,
-                IsAvailable = driver.IsAvailable,
-                PhoneNumber = driver.PhoneNumber,
-                UserId = driver.UserId,
-                UserFullName = driver.User?.FullName
-            };
         }
+
 
         public async Task<bool> DeleteDriverAsync(int driverId)
         {
@@ -136,6 +139,7 @@ namespace Service
         {
             var driver = await driverRepository.GetByIdAsync(id);
             if (driver == null) throw new KeyNotFoundException("Driver not found");
+
             driver.IsAvailable = isAvailable;
             await driverRepository.SaveChangesAsync();
         }

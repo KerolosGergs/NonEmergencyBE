@@ -12,7 +12,7 @@ namespace ServiceAbstraction
         Task<IEnumerable<NurseDetailsDto>> GetAllNursesAsync();
         Task<NurseDetailsDto> GetNurseByIdAsync(int id);
         Task<IEnumerable<NurseDetailsDto>> GetAvailableNursesAsync();
-        Task UpdateNurseAsync(int id, NurseDto dto);
+        Task UpdateNurseAsync(int id, UpdateNurseDto dto);
         Task<bool> DeleteNurseAsync(int id);
         Task ToggleAvailabilityAsync(int id, bool isAvailable);
 

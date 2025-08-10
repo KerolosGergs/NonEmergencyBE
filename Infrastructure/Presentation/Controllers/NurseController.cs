@@ -87,7 +87,7 @@ namespace Presentation.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateNurse(int id, [FromBody] NurseDto dto)
+        public async Task<IActionResult> UpdateNurse(int id, [FromBody] UpdateNurseDto dto)
         {
             var response = new GeneralResponse();
             try

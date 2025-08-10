@@ -12,7 +12,7 @@ namespace ServiceAbstraction
 
         Task<IEnumerable<DriverDTO>> GetAllDriversAsync();
         Task<DriverDTO> GetDriverByIdAsync(int id);
-        Task<DriverDTO> UpdateDriverAsync(int id, DriverDTO dto);
+        Task UpdateDriverAsync(int id, UpdateDriverDto dto);
         Task<bool> DeleteDriverAsync(int id);
         Task ToggleAvailabilityAsync(int id, bool isAvailable);
 

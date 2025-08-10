@@ -39,7 +39,14 @@ namespace Persistence.Repositories
             return await _dbContext.Nurses.Include(n => n.User).Where(n => n.IsAvailable).ToListAsync();
         }
 
-  
+        public async Task<Nurse> GetByIdWithRequestsAndTripsAsync(int NurseId)
+        {
+            return await _dbContext.Nurses
+                .Include(d => d.AssignedRequests)
+                .Include(d => d.Trips)
+                    .ThenInclude(t => t.Request)
+                .FirstOrDefaultAsync(d => d.Id == NurseId);
+        }
 
     }
 }

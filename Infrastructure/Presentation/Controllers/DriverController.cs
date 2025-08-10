@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Shared.DTOS.Registeration;
 using Shared.DTOS.Driver;
 using DomainLayer.Models;
+using Shared.DTOS.Nurse;
 
 namespace Presentation.Controllers
 {
@@ -87,20 +88,12 @@ namespace Presentation.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] DriverDTO dto)
+        public async Task<IActionResult> UpdateDriver(int id, [FromBody] UpdateDriverDto dto)
         {
             var response = new GeneralResponse();
             try
             {
-                var updated = await driverService.UpdateDriverAsync(id, dto);
-                if (updated == null)
-                {
-                    response.Success = false;
-                    response.Message = "Driver not found.";
-                    return NotFound(response);
-                }
-
-                response.Data = updated;
+                await driverService.UpdateDriverAsync(id, dto);
                 response.Success = true;
                 response.Message = "Driver updated successfully.";
             }
@@ -112,6 +105,7 @@ namespace Presentation.Controllers
 
             return Ok(response);
         }
+
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
@@ -147,12 +141,12 @@ namespace Presentation.Controllers
         }
 
         [HttpPatch("{id}/toggle-availability")]
-        public async Task<IActionResult> ToggleAvailability(int id, [FromBody] bool isAvailable)
+        public async Task<IActionResult> ToggleAvailability(int id, [FromBody] ToggleAvailabilityDto dto)
         {
             var response = new GeneralResponse();
             try
             {
-                await driverService.ToggleAvailabilityAsync(id, isAvailable);
+                await driverService.ToggleAvailabilityAsync(id, dto.IsAvailable);
                 response.Success = true;
                 response.Message = "Driver availability updated successfully.";
             }
