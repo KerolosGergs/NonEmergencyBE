@@ -12,5 +12,6 @@ namespace Shared.DTOS.Nurse
         public bool IsAvailable { get; set; }
         public string PhoneNumber { get; set; }
         public string UserId { get; set; }
+        public string ImgUrl { get; set; }
     }
 }

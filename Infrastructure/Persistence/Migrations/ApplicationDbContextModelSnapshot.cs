@@ -3,20 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Persistence.Data;
 
 #nullable disable
 
-namespace Persistence.Data.Migrations
+namespace Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250616235650_InitialCreate")]
-    partial class InitialCreate
+    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -93,6 +90,9 @@ namespace Persistence.Data.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
+                    b.Property<decimal>("Balance")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
@@ -162,6 +162,10 @@ namespace Persistence.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("ImgUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("IsAvailable")
                         .HasColumnType("bit");
 
@@ -199,6 +203,10 @@ namespace Persistence.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("ImgUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsAvailable")
                         .HasColumnType("bit");
@@ -239,6 +247,10 @@ namespace Persistence.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ImgUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("MedicalHistory")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -268,7 +280,7 @@ namespace Persistence.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RequestId"));
 
-                    b.Property<int>("AssignedAmbulanceId")
+                    b.Property<int?>("AssignedAmbulanceId")
                         .HasColumnType("int");
 
                     b.Property<int?>("DriverId")
@@ -289,12 +301,18 @@ namespace Persistence.Data.Migrations
                     b.Property<int?>("NurseId")
                         .HasColumnType("int");
 
+                    b.Property<bool>("PatientConfirmed")
+                        .HasColumnType("bit");
+
                     b.Property<int>("PatientId")
                         .HasColumnType("int");
 
                     b.Property<string>("PickupAddress")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("Price")
+                        .HasColumnType("float");
 
                     b.Property<DateTime>("RequestDate")
                         .HasColumnType("datetime2");
@@ -315,6 +333,49 @@ namespace Persistence.Data.Migrations
                     b.HasIndex("PatientId");
 
                     b.ToTable("Requests");
+                });
+
+            modelBuilder.Entity("DomainLayer.Models.Trip_Module.Rating", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("DriverId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Notes")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("NurseId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PatientId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Score")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TripId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DriverId");
+
+                    b.HasIndex("NurseId");
+
+                    b.HasIndex("PatientId");
+
+                    b.HasIndex("TripId");
+
+                    b.ToTable("Ratings");
                 });
 
             modelBuilder.Entity("DomainLayer.Models.Trip_Module.Trip", b =>
@@ -365,6 +426,97 @@ namespace Persistence.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("Trips");
+                });
+
+            modelBuilder.Entity("DomainLayer.Models.Withdrawal_Module.ProfitDistribution", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("DistributionDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DriverId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<decimal>("DriverPercentage")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("DriverProfit")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("NurseId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<decimal>("NursePercentage")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("NurseProfit")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("PlatformPercentage")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("PlatformProfit")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("TotalTripPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("TripId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DriverId");
+
+                    b.HasIndex("NurseId");
+
+                    b.HasIndex("TripId");
+
+                    b.ToTable("ProfitDistributions");
+                });
+
+            modelBuilder.Entity("DomainLayer.Models.Withdrawal_Module.WithdrawalRequest", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AdminNotes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ProcessedByAdminId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("ProcessedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("RequestDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProcessedByAdminId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("WithdrawalRequests");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -577,6 +729,37 @@ namespace Persistence.Data.Migrations
                     b.Navigation("Patient");
                 });
 
+            modelBuilder.Entity("DomainLayer.Models.Trip_Module.Rating", b =>
+                {
+                    b.HasOne("DomainLayer.Models.Identity_Module.Driver", "Driver")
+                        .WithMany()
+                        .HasForeignKey("DriverId");
+
+                    b.HasOne("DomainLayer.Models.Identity_Module.Nurse", "Nurse")
+                        .WithMany()
+                        .HasForeignKey("NurseId");
+
+                    b.HasOne("DomainLayer.Models.Identity_Module.Patient", "Patient")
+                        .WithMany()
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DomainLayer.Models.Trip_Module.Trip", "Trip")
+                        .WithMany()
+                        .HasForeignKey("TripId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Driver");
+
+                    b.Navigation("Nurse");
+
+                    b.Navigation("Patient");
+
+                    b.Navigation("Trip");
+                });
+
             modelBuilder.Entity("DomainLayer.Models.Trip_Module.Trip", b =>
                 {
                     b.HasOne("DomainLayer.Models.Ambulance_Module.Ambulance", "Ambulance")
@@ -608,6 +791,46 @@ namespace Persistence.Data.Migrations
                     b.Navigation("Nurse");
 
                     b.Navigation("Request");
+                });
+
+            modelBuilder.Entity("DomainLayer.Models.Withdrawal_Module.ProfitDistribution", b =>
+                {
+                    b.HasOne("DomainLayer.Models.Identity_Module.ApplicationUser", "Driver")
+                        .WithMany()
+                        .HasForeignKey("DriverId");
+
+                    b.HasOne("DomainLayer.Models.Identity_Module.ApplicationUser", "Nurse")
+                        .WithMany()
+                        .HasForeignKey("NurseId");
+
+                    b.HasOne("DomainLayer.Models.Trip_Module.Trip", "Trip")
+                        .WithMany()
+                        .HasForeignKey("TripId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Driver");
+
+                    b.Navigation("Nurse");
+
+                    b.Navigation("Trip");
+                });
+
+            modelBuilder.Entity("DomainLayer.Models.Withdrawal_Module.WithdrawalRequest", b =>
+                {
+                    b.HasOne("DomainLayer.Models.Identity_Module.ApplicationUser", "ProcessedByAdmin")
+                        .WithMany()
+                        .HasForeignKey("ProcessedByAdminId");
+
+                    b.HasOne("DomainLayer.Models.Identity_Module.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ProcessedByAdmin");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

@@ -50,6 +50,10 @@ namespace Persistence.Repositories
                     .Where(r => r.Status == RequestStatus.Pending && r.NurseId == null)
                     .Include(r => r.Patient)
                     .ThenInclude(p => p.User);
+            foreach (var request in requestData)
+            {
+                request.Price = Math.Floor(request.Price * 0.30)   ;
+            }
             return requestData;
         }
         #endregion

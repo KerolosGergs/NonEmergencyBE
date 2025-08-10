@@ -99,7 +99,9 @@ namespace Service
                 NurseId = r.NurseId,
                 NurseName = r.Nurse != null && r.Nurse.User != null ? r.Nurse.User.FullName ?? "" : "",
                 NursePhone = r.Nurse != null ? r.Nurse.PhoneNumber ?? "" : "",
-                NurseImg = r.Nurse != null ? r.Nurse.ImgUrl ?? "" : ""
+                NurseImg = r.Nurse != null ? r.Nurse.ImgUrl ?? "" : "",
+                Price =r.Price
+
             });
 
         }

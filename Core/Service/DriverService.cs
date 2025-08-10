@@ -35,7 +35,9 @@ namespace Service
                 IsAvailable = n.IsAvailable,
                 PhoneNumber = n.PhoneNumber,
                 UserId = n.UserId,
-                UserFullName = n.User.FullName
+                UserFullName = n.User.FullName,
+                ImgUrl=n.ImgUrl
+                
             });
         }
 
@@ -55,7 +57,8 @@ namespace Service
                 IsAvailable = driver.IsAvailable,
                 PhoneNumber = driver.PhoneNumber,
                 UserId = driver.UserId,
-                UserFullName = driver.User.FullName
+                UserFullName = driver.User.FullName,
+                ImgUrl=driver.ImgUrl
 
             };
         }

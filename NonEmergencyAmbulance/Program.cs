@@ -7,6 +7,8 @@ using ServiceAbstraction;
 using Service;
 using DomainLayer.Contracts;
 using Persistence.Repositories;
+using BLL.Services.FileService;
+using Core.Service;
 
 namespace NonEmergencyAmbulance
 {
@@ -57,6 +59,12 @@ namespace NonEmergencyAmbulance
             {
                 client.DefaultRequestHeaders.UserAgent.ParseAdd("NonEmergencyAmbulanceApp/1.0");
             });
+            builder.Services.AddScoped<IFileService, FileService>();            // BLL.Services.FileService.IFileService -> FileService
+            builder.Services.AddScoped<IProfitDistributionService, ProfitDistributionService>();
+            builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+            builder.Services.AddScoped<IRequestService, RequestService>();
+            builder.Services.AddScoped<ITripService, TripService>();
+
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowFrontend",

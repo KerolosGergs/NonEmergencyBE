@@ -40,7 +40,6 @@ namespace Service
             if (nurse == null)
                 return null;
 
-
             return new NurseDetailsDto
             {
                 Id = nurse.Id,
@@ -48,7 +47,10 @@ namespace Service
                 IsAvailable = nurse.IsAvailable,
                 PhoneNumber = nurse.PhoneNumber,
                 UserId = nurse.UserId,
-                FullName = nurse.User.FullName
+                FullName = nurse.User.FullName,
+                ImgUrl = nurse.ImgUrl
+                
+
             };
 
         }

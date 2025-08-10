@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Persistence.Data.Migrations
+namespace Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -31,6 +31,7 @@ namespace Persistence.Data.Migrations
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     FullName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Balance = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -186,7 +187,8 @@ namespace Persistence.Data.Migrations
                     LicenseNumber = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     PhoneNumber = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     IsAvailable = table.Column<bool>(type: "bit", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ImgUrl = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -208,7 +210,8 @@ namespace Persistence.Data.Migrations
                     Certification = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     IsAvailable = table.Column<bool>(type: "bit", nullable: false),
                     PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ImgUrl = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -232,6 +235,7 @@ namespace Persistence.Data.Migrations
                     Gender = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: false),
                     PhoneNumber = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    ImgUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
@@ -239,6 +243,36 @@ namespace Persistence.Data.Migrations
                     table.PrimaryKey("PK_Patients", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Patients_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "WithdrawalRequests",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    RequestDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    ProcessedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    AdminNotes = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ProcessedByAdminId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_WithdrawalRequests", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_WithdrawalRequests_AspNetUsers_ProcessedByAdminId",
+                        column: x => x.ProcessedByAdminId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_WithdrawalRequests_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
@@ -281,7 +315,9 @@ namespace Persistence.Data.Migrations
                     EmergencyType = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Notes = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AssignedAmbulanceId = table.Column<int>(type: "int", nullable: false),
+                    Price = table.Column<double>(type: "float", nullable: false),
+                    PatientConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    AssignedAmbulanceId = table.Column<int>(type: "int", nullable: true),
                     PatientId = table.Column<int>(type: "int", nullable: false),
                     DriverId = table.Column<int>(type: "int", nullable: true),
                     NurseId = table.Column<int>(type: "int", nullable: true)
@@ -348,6 +384,86 @@ namespace Persistence.Data.Migrations
                         column: x => x.RequestId,
                         principalTable: "Requests",
                         principalColumn: "RequestId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProfitDistributions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TripId = table.Column<int>(type: "int", nullable: false),
+                    TotalTripPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    DriverProfit = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    DriverId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    NurseProfit = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    NurseId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    PlatformProfit = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    DistributionDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DriverPercentage = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    NursePercentage = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    PlatformPercentage = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProfitDistributions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProfitDistributions_AspNetUsers_DriverId",
+                        column: x => x.DriverId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ProfitDistributions_AspNetUsers_NurseId",
+                        column: x => x.NurseId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ProfitDistributions_Trips_TripId",
+                        column: x => x.TripId,
+                        principalTable: "Trips",
+                        principalColumn: "TripId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Ratings",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TripId = table.Column<int>(type: "int", nullable: false),
+                    DriverId = table.Column<int>(type: "int", nullable: true),
+                    NurseId = table.Column<int>(type: "int", nullable: true),
+                    PatientId = table.Column<int>(type: "int", nullable: false),
+                    Score = table.Column<int>(type: "int", nullable: false),
+                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Ratings", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Ratings_Drivers_DriverId",
+                        column: x => x.DriverId,
+                        principalTable: "Drivers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Ratings_Nurses_NurseId",
+                        column: x => x.NurseId,
+                        principalTable: "Nurses",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Ratings_Patients_PatientId",
+                        column: x => x.PatientId,
+                        principalTable: "Patients",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Ratings_Trips_TripId",
+                        column: x => x.TripId,
+                        principalTable: "Trips",
+                        principalColumn: "TripId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -420,6 +536,41 @@ namespace Persistence.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_ProfitDistributions_DriverId",
+                table: "ProfitDistributions",
+                column: "DriverId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProfitDistributions_NurseId",
+                table: "ProfitDistributions",
+                column: "NurseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProfitDistributions_TripId",
+                table: "ProfitDistributions",
+                column: "TripId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Ratings_DriverId",
+                table: "Ratings",
+                column: "DriverId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Ratings_NurseId",
+                table: "Ratings",
+                column: "NurseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Ratings_PatientId",
+                table: "Ratings",
+                column: "PatientId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Ratings_TripId",
+                table: "Ratings",
+                column: "TripId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Requests_DriverId",
                 table: "Requests",
                 column: "DriverId");
@@ -454,6 +605,16 @@ namespace Persistence.Data.Migrations
                 table: "Trips",
                 column: "RequestId",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WithdrawalRequests_ProcessedByAdminId",
+                table: "WithdrawalRequests",
+                column: "ProcessedByAdminId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WithdrawalRequests_UserId",
+                table: "WithdrawalRequests",
+                column: "UserId");
         }
 
         /// <inheritdoc />
@@ -478,10 +639,19 @@ namespace Persistence.Data.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Trips");
+                name: "ProfitDistributions");
+
+            migrationBuilder.DropTable(
+                name: "Ratings");
+
+            migrationBuilder.DropTable(
+                name: "WithdrawalRequests");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "Trips");
 
             migrationBuilder.DropTable(
                 name: "Ambulances");

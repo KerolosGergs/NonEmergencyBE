@@ -174,7 +174,7 @@ namespace Service
             var imgUrl = "";
             if (patientDto.Image != null)
             {
-                imgUrl = await fs.UploadFileAsync(patientDto.Image, fs._nurseFileName);
+                imgUrl = await fs.UploadFileAsync(patientDto.Image, fs._UserImage);
             }
             var patient = new Patient
             {
@@ -185,7 +185,7 @@ namespace Service
                 DateOfBirth = patientDto.DateOfBirth,
                 PhoneNumber = patientDto.PhoneNumber,
                 UserId = patientUser.Id,
-                ImgUrl = imgUrl
+                ImgUrl = imgUrl 
 
             };
             await _patientRepository.AddAsync(patient);

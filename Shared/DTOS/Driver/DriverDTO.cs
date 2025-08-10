@@ -14,5 +14,7 @@ namespace Shared.DTOS.Driver
         public bool IsAvailable { get; set; }
         public string UserId { get; set; }
         public string UserFullName { get; set; }
+        public string ImgUrl { get; set; }
+
     }
 }
