@@ -42,7 +42,7 @@ namespace Shared.DTOS.ProfitDTOS
         public decimal PendingWithdrawals { get; set; }
     }
     
-    public class ProfitSummaryDTO
+    public class    SummaryDTO
     {
         public decimal TotalPlatformRevenue { get; set; }
         public decimal TotalDriverPayments { get; set; }
